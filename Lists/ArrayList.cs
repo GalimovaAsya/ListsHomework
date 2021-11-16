@@ -16,6 +16,11 @@ namespace Lists
 			_array = new int[_minArrayLength];
 		}
 
+		public ArrayList(int value)
+		{
+
+		}
+
 		public ArrayList(int[] array)
 		{
 			_array = new int[(int)(array.Length * 1.5 + 1)];
@@ -24,7 +29,8 @@ namespace Lists
 		}
 
 		//1. добавление значения в конец
-		public void AddElementToEnd(int value)
+		#region Add
+		public void Add(int value)
 		{
 			if (Length == _array.Length)
 			{
@@ -33,22 +39,34 @@ namespace Lists
 			_array[Length] = value;
 			Length++;
 		}
+		#endregion
 
 		// 2. добавление значения в начало
-		public void AddToBeginning(int value)
+		#region AddFirst
+		public void AddFirst(int value)
 		{
 			if (Length == _array.Length)
 			{
 				IncreaseArraySize();
 			}
+			if (Length == 0)
+			{
+				_array[0] = value;
+			}
 			ShiftRight();
 			Length++;
 			_array[0] = value;
 		}
+		#endregion
 
 		//3. добавление значения по индексу
-		public void AddElementByIndex(int value, int index)
+		#region AddByIndex
+		public void AddByIndex(int value, int index)
 		{
+			if (index >= Length || index < 0)
+			{
+				throw new IndexOutOfRangeException("index is out of range");
+			}
 			if (Length == _array.Length)
 			{
 				IncreaseArraySize();
@@ -57,76 +75,125 @@ namespace Lists
 			Length++;
 			_array[index] = value;
 		}
+		#endregion
 
 		//4. удаление из конца одного элемента
-		public void RemoveLastElement()
+		#region RemoveLast
+		public void RemoveLast()
 		{
-			_array[Length - 1] = 0;
-			Length--;
+			if (Length > 0)
+			{
+				_array[Length - 1] = 0;
+				Length--;
+			}
 		}
+		#endregion
 
 		//5. удаление из начала одного элемента
-		public void RemoveFirstElement()
+		#region RemoveFirst
+		public void RemoveFirst()
 		{
-			_array[0] = 0;
-			ShiftLeft();
-			Length--;
+			if (Length > 0)
+			{
+				_array[0] = 0;
+				ShiftLeft();
+				Length--;
+			}
 		}
+		#endregion
 
 		//6. удаление по индексу одного элемента
-		public void RemoveAtIndex(int index)
+		#region RemoveByIndex
+		public void RemoveByIndex(int index)
 		{
+			if (index > Length || index < 0)
+			{
+				throw new IndexOutOfRangeException();
+			}
 			_array[index] = 0;
 			ShiftLeft(index);
 			Length--;
 		}
+		#endregion
 
-		//7. удаление из конца N элементов 
+		//7. удаление из конца N элементов
+		#region RemoveLastNTimes
 		public void RemoveLastNTimes(int n)
 		{
-			for (int i = 0; i < n; i++)
-			{
-				RemoveLastElement();
-			}
-		}
+            for (int i = 0; i < n; i++)//долгий метод
+            {
+                RemoveLast();
+            }
+            //if (n > Length)
+            //{
+            //	throw new IndexOutOfRangeException();
+            //}
+            //Length -= n;
+        }
+		#endregion
 
 		//8. удаление из начала N элементов
+		#region RemoveFirstNTimes
 		public void RemoveFirstNTimes(int n)
 		{
-			for (int i = 0; i < n; i++)
-			{
-				RemoveFirstElement();
-			}
-		}
+            for (int i = 0; i < n; i++)//долгий метод
+            {
+                RemoveFirst();
+            }
+        }
+		#endregion
 
-		//9.удаление по индексу N элементов 
-		public void RemoveAtIndexNTimes(int n, int index)
+		//9.удаление по индексу N элементов
+		#region RemoveByIndexNTimes
+		public void RemoveByIndexNTimes(int index, int n)
 		{
-			for (int i = 0; i < n; i++)
+			if (index >= Length || index < 0)
 			{
-				RemoveAtIndex(index);
+				throw new IndexOutOfRangeException();
 			}
-		}
+
+
+            for (int i = index + n; i !=index; i--)
+            {
+                RemoveByIndex(i);
+            }
+        }
+    
+		#endregion
 
 		//10. вернуть длину
+		#region GetLength
 		public int GetLength()
 		{
 			int length = 0;
 			length = Length;
 			return length;
 		}
+		#endregion
 
 		//11. доступ по индексу
-		public int GetIndexAcsess(int index)
+		#region GetValueByIndex
+		public int GetValueByIndex(int index)
 		{
+			if (index > Length || index < 0)
+			{
+				throw new IndexOutOfRangeException();
+			}
 			int value = 0;
 			value = _array[index];
 			return value;
 		}
+		#endregion
 
 		//12. первый индекс по значению
-		public int GetFirstIndexByValue(int value)
+		#region GetIndexByValue
+		public int GetIndexByValue(int value)
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int index = 0;
 			for (int i = 0; i < Length; i++)
 			{
@@ -138,18 +205,28 @@ namespace Lists
 			}
 			return -1;
 		}
+		#endregion
 
-		//13. изменение по индексу 
-		public void GetChangeByIndex(int index, int value)
+		//13. изменение по индексу
+		#region ChangeValueByIndex
+		public void ChangeValueByIndex(int index, int value)
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int tmp = 0;
 			tmp = _array[index];
 			_array[index] = value;
 			value = tmp;
+			
         }
+		#endregion
 
 		//14.реверс
-        public void GetReverse()
+		#region Reverse
+		public void Reverse()
         {
             int x = 0;
 			int y = Length - 1;
@@ -162,10 +239,17 @@ namespace Lists
 				y--;
 			}
         }
+		#endregion
 
-        //15. поиск значения максимального элемента
-        public int GetMaximumElement()
+		//15. поиск значения максимального элемента
+		#region GetMaximumElement
+		public int GetMaximumElement()
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int max = _array[0];
 			for (int i = 0; i < Length; i++)
 			{
@@ -176,9 +260,17 @@ namespace Lists
 			}
 			return max;
 		}
+		#endregion
+
 		//16. поиск значения минимального элемента
+		#region GetMinimumElement
 		public int GetMinimumElement()
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int min = _array[0];
 			for (int i = 0; i < Length; i++)
 			{
@@ -189,12 +281,20 @@ namespace Lists
 			}
 			return min;
 		}
+		#endregion
+
 		//17. поиск индекс максимального элемента
-		public int GetIndexMaximumElement()
+		#region GetIndexOfMax
+		public int GetIndexOfMax()
 		{
-            int max = _array[0];
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
+			int max = _array[0];
             int indexMax = 0;
-            for (int i = 0; i < _array.Length; i++)
+            for (int i = 0; i < Length; i++)
             {
                 if (_array[i] > max)
                 {
@@ -204,9 +304,17 @@ namespace Lists
             }
             return indexMax;
         }
+		#endregion
+
 		//18. поиск индекс минимального элемента
-		public int GetIndexMinimumElement()
+		#region GetIndexOfMin
+		public int GetIndexOfMin()
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int min = _array[0];
 			int indexMin = 0;
 			for (int i = 0; i < Length; i++)
@@ -219,9 +327,17 @@ namespace Lists
 			}
 			return indexMin;
 		}
+		#endregion
+
 		//19. сортировка по возрастанию
+		# region GetSortAscerding
 		public void GetSortAscerding()
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int tmp = 0;
 			for (int i = 0; i < Length - 1; i++)
 			{
@@ -236,9 +352,17 @@ namespace Lists
 				}
 			}
 		}
+		#endregion
+
 		//20. сортировка по убыванию
+		#region GetSortDescending
 		public void GetSortDescending()
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int tmp = 0;
 			for (int i = 0; i < Length; i++)
 			{
@@ -253,42 +377,93 @@ namespace Lists
 				}
 			}
 		}
-		//21. удаление по значению первого(?вернуть индекс) -удали первую 7= первую семерку котоорую он встретит удаляетБ если нет -1
-		public void RemoveByValueOfFirst(int value)
+		#endregion
+
+		//21. удаление по значению первого(?вернуть индекс)
+		#region RemoveFirstByValue
+		public int RemoveFirstByValue(int value)
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			for (int i = 0; i < Length; i++)
 			{
 				if (_array[i] == value)
 				{
+					int index = i;
 					_array[i] = 0;
 					ShiftLeft(i);
 					Length--;
+					return index;
 				}
 			}
+			return -1;
 		}
+		#endregion
+
 		//22. удаление по значению всех(?вернуть кол-во)- удаление всех 7 в массиве
-		public void RemoveAllValue(int value)
+		#region RemoveAllValue
+		public int RemoveAllValue(int value)
 		{
+			if (Length == 0)
+			{
+				throw new NullReferenceException("Array is empty");
+			}
+
 			int count = 0;
-			for (int i = 0; i < Length; i++)
+			int i = 0;
+			while (i <= Length)
 			{
 				if (_array[i] == value)
 				{
-					_array[i] = 0;
 					count++;
+					_array[i] = 0;
 					ShiftLeft(i);
 					Length--;
+				i--;
 				}
+				i++;
 			}
+			if (count > 0)
+			{
+				return count;
+			}
+			return -1;
 		}
+		#endregion
+
 		//23. 3 конструктора(пустой, на основе одного элемента, на основе массива ) -  метод добавить по индексу
+
 		//24. добавление списка(вашего самодельного) в конец
-		//25. добавление списка в начало
+		#region
+		public void Add(ArrayList array)
+		{
+
+		}
+        #endregion
+
+        //25. добавление списка в начало
+        #region
+		public void AddFirst(ArrayList array)
+		{
+
+		}
+		#endregion
+
 		//26. добавление списка по индексу
+		#region
+		public void AddByIndex(ArrayList array, int index)
+		{
+
+		}
+        #endregion
 
 
-		//увеличение размера массива
-		private void IncreaseArraySize()
+        //увеличение размера массива
+        #region IncreaseArraySize
+        private void IncreaseArraySize()
 		{
 			int[] tmpArray = new int[(int)(_array.Length * 1.5)];
 			for (int i = 0; i < Length; i++)
@@ -297,8 +472,10 @@ namespace Lists
 			}
 			_array = tmpArray;
 		}
+		#endregion
 
 		//уменьшение размера массива
+		#region DescreaseArraySize
 		private void DescreaseArraySize()
 		{
 			if (Length < _array.Length)
@@ -311,19 +488,12 @@ namespace Lists
 				_array = tmpArray;
 			}
 		}
+		#endregion
 
 		// Смещает элементы массива с определённой позиции вправо на единицу
+		#region ShiftRight
 		private void ShiftRight(int position = 0)
 		{
-			// Проверка position
-			if (position >= Length)
-			{
-				throw new ArgumentOutOfRangeException();
-			}
-			while (Length == _array.Length)
-			{
-				IncreaseArraySize();
-			}
 			for (int i = Length - 1; i >= position; i--)
 			{
 				_array[i + 1] = _array[i];
@@ -333,8 +503,10 @@ namespace Lists
 				_array[i] = 0;
 			}
 		}
+		#endregion
 
 		// Смещает элементы массива с определённой позиции влево на единицу
+		#region ShiftLeft
 		private void ShiftLeft(int position = 0)
 		{
 			if (position < 0)
@@ -347,7 +519,9 @@ namespace Lists
 			}
 			_array[Length - 1] = 0;
 		}
+		#endregion
 
+		#region WriteToConsole
 		public void WriteToConsole() //для консоли
 		{
 			for (int i = 0; i < Length; i++)
@@ -356,7 +530,9 @@ namespace Lists
 			}
 			Console.WriteLine();
 		}
+		#endregion
 
+		#region Equals
 		public override bool Equals(object obj)
 		{
 			ArrayList arrayList = (ArrayList)obj;
@@ -376,7 +552,9 @@ namespace Lists
 
 			return true;
 		}
+		#endregion
 
+		#region ToString
 		public override string ToString()
 		{
 			string s = "";
@@ -386,10 +564,44 @@ namespace Lists
 			}
 			return s;
 		}
+		#endregion
 
+		#region GetHashCode
 		public override int GetHashCode()
 		{
 			throw new NotImplementedException();
 		}
-	}
+
+        public void Add(int[] array)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
+
+        //отбить ошибки с отрицательными индексами
+        //отбить пустые массивы
+
+        //ТЕСТЫ:
+        //пустой
+        //один элемент
+        //отрицательные
+        //все с нулями
+        //отсортированный список
+
+
+        //если есть индексы => indexoutofrange
+
+        //1 and24 add or addlast
+        //2addfirst
+        //addbyindex
+        //removelast
+        //removefirstlast
+        //12getfirstindexbyvalue
+        //14reverse
+        //15getmaxvalue or getmax
+        //17getindexofmax
+        //21removefirstbyvalue
+        //removeallbyvalue
+    }
 }
