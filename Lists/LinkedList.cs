@@ -6,6 +6,7 @@ namespace Lists
     public class LinkedList
     {
         private Node _root;
+
         public LinkedList()
         {
             _root = null;
@@ -148,7 +149,6 @@ namespace Lists
         #region RemoveFirst
         public void RemoveFirst()
         {
-            // Node tmp = _root.Next;
             if (_root == null)
             {
                 throw new NullReferenceException("List is empty");
