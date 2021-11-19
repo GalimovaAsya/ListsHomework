@@ -3,7 +3,7 @@ namespace Lists
 {
     public class DoublyLinkedList
     {
-        public int Length { get; set; }
+        public int Length { get; private set; }
         private DNode _root;
 
         private DNode _tail;
@@ -30,7 +30,7 @@ namespace Lists
                 if (_root != null)
                 {
                     _tail.Next = new DNode(array[i]);
-                    _tail.Next.Privious = _tail;
+                    _tail.Next.Previous = _tail;
                     _tail = _tail.Next;
                     Length++;
                 }
@@ -57,7 +57,7 @@ namespace Lists
             else
             {
                 _tail.Next = new DNode(value);//хвост tail ссылается на новую ноду
-                _tail.Next.Privious = _tail;//и новая нода ссылается на хвост - замыкающая ссылка назад
+                _tail.Next.Previous = _tail;//и новая нода ссылается на хвост - замыкающая ссылка назад
                 _tail = _tail.Next;
                 Length++;
             }
@@ -69,15 +69,14 @@ namespace Lists
         public void AddFirst(int value)
         {
             DNode tmp = new DNode(value);
-            if (_root == null)
-            {
-                _root = tmp;
-            }
-            else
+
+            if (_root != null)
             {
                 tmp.Next = _root;
-                _root = tmp;
+                _root.Previous = tmp;
             }
+            _root = tmp;
+            Length++;
         }
         #endregion
 
@@ -85,67 +84,36 @@ namespace Lists
         #region AddByIndex
         public void AddByIndex(int value, int index)//1 2 3 9 4 5 6
         {
-            bool isIndexLeft = index <= Length / 2;//к чему ближе находится элемент? к концу или началу?
-            DNode crnt;
-            int numberOfSteps;
-            if (index < 0 || index > 0)
+            if (index < 0 || index > Length)
             {
                 throw new IndexOutOfRangeException();
             }
-
-            if (isIndexLeft)
+            else if (index == 0)
             {
-                crnt = _root;
-                numberOfSteps = index;
+                AddFirst(value);
+            }
+            else if (index == Length)
+            {
+                Add(value);
             }
             else
             {
-                crnt = _tail;
-                numberOfSteps = Length - index;
+                DNode tmp = _root.Next;
+                int position = 1;
+                while (tmp != null && position != index)
+                {
+                    tmp = tmp.Next;
+                    position++;
+                }
+                DNode newNode = new DNode(value);
+
+                tmp.Previous.Next = newNode;
+                newNode.Previous = tmp.Previous;
+                tmp.Previous = newNode;
+                newNode.Next = tmp;
+
+                Length++;
             }
-            for (int i = 1; i <= numberOfSteps; i++)
-            {
-
-            }
-
-            //3 варианта
-            //_рут=_тейл;
-            //два элемента
-
-            //if (index < 0 || index > 0)
-            //{
-            //    throw new IndexOutOfRangeException();
-            //}
-
-
-            //for (int i = 1; i <= numberOfSteps; i++)
-            //{
-            //    crnt = isIndexLeft ? crnt.Next : crnt.Privious;//условие до ? после будет вот это : иначе
-            //}
-
-            //if (crnt != _root && crnt != _tail)//если карент не равен нулю и
-            //{
-            //    crnt.Privious.Next = crnt.Next;//удаление ноды
-            //    crnt.Next.Privious = crnt.Privious;//для случаев если нода не первая и не последняя
-            //    Length--;
-            //}
-            //else if (crnt == _root && crnt == _tail)
-            //{
-            //    _root = null;
-            //    _tail = null;
-            //    Length = 0;
-            //}
-            //else if (crnt == _root)
-            //{
-            //    crnt.Next.Privious = null;//убиваем ссылку второго элемента на первый чтобы на него никто не ссылался
-            //    _root = crnt.Next;
-            //}
-            //else
-            //{
-            //    crnt.Privious.Next = null;
-            //    _tail = crnt.Privious;
-            //}
-            //Length--;
         }
         #endregion
 
@@ -163,7 +131,7 @@ namespace Lists
             }
             else
             {
-                _tail = _tail.Privious;
+                _tail = _tail.Previous;
                 _tail.Next = null;
                 Length--;
             }
@@ -203,7 +171,7 @@ namespace Lists
             bool isIndexLeft = index < Length / 2;//к чему ближе находится элемент? к концу или началу?
             DNode crnt;
             int numberOfSteps;
-            if (index < 0 || index > Length)
+            if (index < 0 || Length < index)
             {
                 throw new IndexOutOfRangeException();
             }
@@ -215,22 +183,22 @@ namespace Lists
             }
             else
             {
-                crnt=_tail;
-                numberOfSteps = Length - index; //- index;
+                crnt = _tail;
+                numberOfSteps = Length - index;
             }
 
             for (int i = 1; i < numberOfSteps; i++)
             {
-                crnt = isIndexLeft ? crnt.Next:crnt.Privious;//условие до ? после будет вот это : иначе
+                crnt = isIndexLeft ? crnt.Next:crnt.Previous;//условие до ? после будет вот это : иначе
             }
 
-            if (crnt != _root && crnt != _tail)//если карент не равен нулю и
+            if (crnt != _root && crnt != _tail)//нода не последняя и не первая
             {
-                crnt.Privious.Next = crnt.Next;//удаление ноды
-                crnt.Next.Privious = crnt.Privious;//для случаев если нода не первая и не последняя
+                crnt.Previous.Next = crnt.Next;//удаление ноды
+                crnt.Next.Previous = crnt.Previous;//для случаев если нода не первая и не последняя
                 Length--;
             }
-            else if (crnt == _root && crnt == _tail)
+            else if (crnt == _root && crnt == _tail)//если один элемент
             {
                 _root = null;
                 _tail = null;
@@ -238,13 +206,13 @@ namespace Lists
             }
             else if (crnt == _root)
             {
-                crnt.Next.Privious = null;//убиваем ссылку второго элемента на первый чтобы на него никто не ссылался
+                crnt.Next.Previous = null;//убиваем ссылку второго элемента на первый чтобы на него никто не ссылался
                 _root = crnt.Next;
             }
-            else
+            else 
             {
-                crnt.Privious.Next = null;
-                _tail = crnt.Privious;
+                crnt.Previous.Next = null;
+                _tail = crnt.Previous;
             }
             Length--;
         }
@@ -254,23 +222,18 @@ namespace Lists
         #region RemoveLastNTimes
         public void RemoveLastNTimes(int n)
         {
+            DNode tmp = _tail;
             if (_root == null && _tail == null)
             {
                 throw new NullReferenceException("List is empty");
             }
-            else if (_root.Next == null)//_root=_tail
+
+            for (int i = Length; i != n; i--)
             {
-                _root = null;
+                tmp = tmp.Previous;
             }
-            else
-            {
-                for (int i = n; n != 0; n--)
-                {
-                    _tail = _tail.Privious;
-                    _tail.Next = null;
-                    Length--;
-                }
-            }
+            _tail.Previous = null;
+            _root = _tail.Previous;
         }
         #endregion
 
@@ -278,25 +241,18 @@ namespace Lists
         #region RemoveFirstNTimes
         public void RemoveFirstNTimes(int n)
         {
-            if (_root == null)
+            DNode tmp = _root;
+            if (_root == null && _tail == null)
             {
                 throw new NullReferenceException("List is empty");
             }
-            if (_root.Next != null)
+
+            for (int i = 0; i != n; i++)
             {
-                _root = _root.Next;
+                tmp = tmp.Next;
             }
-            else if (_root.Next == null)
-            {
-                _root = null;
-            }
-            else
-            {
-                for (int i = n; n != 0; n--)
-                {
-                    _root = null;
-                }
-            }
+            _tail.Previous = null;
+            _root = _tail.Previous;
         }
         //добежать до нужного и рут=новый
         #endregion
@@ -313,36 +269,155 @@ namespace Lists
         //#region GetLength
         //public int GetLength()
         //{
-            
+
         //}
         //#endregion
 
-        ////11. доступ по индексу// вводим индекс вывести элемент
-        //#region GetValueByIndex
-        //public int GetValueByIndex(int index)// 1 2 3 4 5 6 7// 2 index
-        //{
-           
-        //}
-        //#endregion
+        //11. доступ по индексу// вводим индекс вывести элемент
+        #region GetValueByIndex
+        public int GetValueByIndex(int index)// 1 2 3 4 5 6 7// 2 index
+        {
+            DNode tmp = _root;
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
 
-        ////12. первый индекс по значению//вернуть первый индекс с заданным элементом
-        //#region
-        //public int GetIndexByValue(int value) //1 2 3 4 5 6 7 -> 
-        //{
-           
-        //}
-        //#endregion
+            if (index < 0 || Length < index)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (index < (Length / 2))
+            {
+                tmp = _root;
+                for (int i = 0; i < index; i++)
+                {
+                    if (tmp.Next == null)
+                    {
+                        return -1;
+                    }
+                    tmp = tmp.Next;                   
+                }
+
+            }
+            else
+            {
+                tmp = _tail;
+                for (int i = Length - 1; i > index; i--)
+                {
+                    if (tmp.Previous == null)
+                    {
+                        return -1;
+                    }
+                    tmp = tmp.Previous;
+                }
+            }
+            return tmp.Value;
+        }
+        #endregion
+
+        //12. первый индекс по значению//вернуть первый индекс с заданным элементом
+        #region
+        public int GetIndexByValue(int value)
+        {
+            int index = 0;
+            DNode tmp;
+            bool isIndexLeft = index < Length / 2;
+
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            if (isIndexLeft)
+            {
+                tmp = _root;
+                while (tmp != null)
+                {
+                    if (tmp.Value == value)
+                    {
+                        return index;
+                    }
+                    else
+                    {
+                        index++;
+                        tmp = tmp.Next;
+                    }
+                }
+            }
+            else
+            {
+                tmp = _tail;
+                index = Length - 1;
+                while (tmp != null)
+                {
+                    if (tmp.Value == value)
+                    {
+                        return index;
+                    }
+                    else
+                    {
+                        index--;
+                        tmp = tmp.Previous;
+                    }
+                }
+            }
+            return -1;
+        }
+        #endregion
 
         //13. изменение по индексу//вводим индекс и меняем значение
-        public void ChangeValueByIndex(int index, int value)//1 2 3 4 5 6 7//index 2
+        public void ChangeValueByIndex(int index, int value)
         {
-           
+            DNode tmp = new DNode(value);
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+
+            if (index < 0 || index > Length)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            else
+            {
+                bool isIndexLeft = index < Length / 2;
+                if (isIndexLeft)
+                {
+                    tmp = _root;
+                    for (int i = 0; i < index; i++)
+                    {
+                        tmp = tmp.Next;
+                    }
+                    tmp.Value = value;
+                }
+                else
+                {
+                    tmp = _tail;
+                    for (int i = Length - 1; i > index; i--)
+                    {
+                        tmp = tmp.Previous;
+                    }
+                    tmp.Value = value;
+                }
+            }
         }
 
         //14. реверс(123 -> 321)
         #region Reverse
         public void Reverse()
         {
+            if (_tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            _root = _tail;
+            int count = 0;
+            while (_root != null)
+            {
+                count++;
+                _root = _root.Previous;
+            }
         
         }
         #endregion
@@ -379,21 +454,21 @@ namespace Lists
         //}
         //#endregion
 
-        //19. сортировка по возрастанию !
-        #region
-        public void GetSortAscerding()
-        {
-            //пузырьком
-        }
-        #endregion
+        ////19. сортировка по возрастанию !
+        //#region
+        //public void GetSortAscerding()
+        //{
+        //    //пузырьком
+        //}
+        //#endregion
 
-        //20. сортировка по убыванию !
-        #region
-        public void GetSortDescending()
-        {
-            //пузырьком
-        }
-        #endregion
+        ////20. сортировка по убыванию !
+        //#region
+        //public void GetSortDescending()
+        //{
+        //    //пузырьком
+        //}
+        //#endregion
 
         ////21. удаление по значению первого(?вернуть индекс)
         //#region RemoveFirstByValue
@@ -411,48 +486,30 @@ namespace Lists
         //}
         //#endregion
 
-        //23. 3 конструктора(пустой, на основе одного элемента, на основе массива )
-        //24. добавление списка(вашего самодельного) в конец
-        #region
-        public void Add(LinkedList list)
-        {
+        ////23. 3 конструктора(пустой, на основе одного элемента, на основе массива )
+        ////24. добавление списка(вашего самодельного) в конец
+        //#region
+        //public void Add(LinkedList list)
+        //{
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        //25. добавление списка в начало
-        #region
-        public void AddFirst(LinkedList list)
-        {
+        ////25. добавление списка в начало
+        //#region
+        //public void AddFirst(LinkedList list)
+        //{
 
-        }
-        #endregion
+        //}
+        //#endregion
 
-        //26. добавление списка по индексу
-        #region
-        public void AddByIndex(LinkedList list, int index)
-        {
+        ////26. добавление списка по индексу
+        //#region
+        //public void AddByIndex(LinkedList list, int index)
+        //{
 
-        }
-        #endregion
-
-
-        #region WriteToConsole
-        public void WriteToConsole() //для консоли
-        {
-            DNode current = _root;
-            while (current.Next != null)
-            {
-                // Node (value:5, next: null)
-                Console.Write($"{current.Value} ");
-                current = current.Next;
-                //if (current.Next != null)
-                //{
-                //}
-            }
-            Console.Write($"{current.Value} ");
-        }
-        #endregion
+        //}
+        //#endregion
 
         #region Equals
         public override bool Equals(object obj)
@@ -503,6 +560,19 @@ namespace Lists
         public override int GetHashCode()
         {
             throw new NotImplementedException();
+        }
+        #endregion
+
+        #region WriteToConsole
+        public void WriteToConsole() //для консоли
+        {
+            DNode current = _root;
+            while (current.Next != null)
+            {
+                Console.Write($"{current.Value} ");
+                current = current.Next;
+            }
+            Console.Write($"{current.Value} ");
         }
         #endregion
     }
