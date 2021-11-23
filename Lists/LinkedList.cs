@@ -413,7 +413,7 @@ namespace Lists
 
         //17. поиск индекс максимального элемента
         #region
-        public int GetIndexOfMax()//5 2 6 9 6 5 7//3
+        public int GetIndexOfMax()
         {
             Node tmp = _root;
             int max = tmp.Value;
@@ -465,7 +465,7 @@ namespace Lists
         }
         #endregion
 
-        //19. сортировка по возрастанию !
+        //19. сортировка по возрастанию
         #region
         public void GetSortAscerding()
         {
@@ -473,7 +473,7 @@ namespace Lists
         }
         #endregion
 
-        //20. сортировка по убыванию !
+        //20. сортировка по убыванию
         #region
         public void GetSortDescending()
         {
@@ -576,7 +576,7 @@ namespace Lists
 
 
         #region WriteToConsole
-        public void WriteToConsole() //для консоли
+        public void WriteToConsole()
         {
             Node current = _root;
             while (current.Next != null)

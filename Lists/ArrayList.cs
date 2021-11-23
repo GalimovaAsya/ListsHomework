@@ -414,7 +414,7 @@ namespace Lists
 
 			int count = 0;
 			int i = 0;
-			while (i <= Length)
+			while (i < Length)
 			{
 				if (_array[i] == value)
 				{

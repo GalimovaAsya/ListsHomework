@@ -41,7 +41,6 @@ namespace Lists
                     Length = 1;
                 }
             }
-
         }
 
         //1. добавление значения в конец
@@ -254,24 +253,57 @@ namespace Lists
             _tail.Previous = null;
             _root = _tail.Previous;
         }
-        //добежать до нужного и рут=новый
         #endregion
 
         //9. удаление по индексу N элементов
         #region RemoveByIndexNTimes
         public void RemoveByIndexNTimes(int index, int n)
         {
-            
+            DNode tmp = _root;
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            if (index < 0 || Length < index)
+            {
+                throw new IndexOutOfRangeException();
+            }
+
+            if (index < (Length / 2))
+            {
+                tmp = _root;
+                for (int i = 0; i != n; i++)
+                {
+                    tmp = tmp.Next;
+                }
+                _tail.Previous = null;
+                _root = _tail.Previous;
+
+            }
+            else
+            {
+                tmp = _tail;
+                for (int i = Length; i != n; i--)
+                {
+                    tmp = tmp.Previous;
+                }
+                _tail.Previous = null;
+                _root = _tail.Previous;
+            }
         }
         #endregion
 
-        ////10. вернуть длину
-        //#region GetLength
-        //public int GetLength()
-        //{
-
-        //}
-        //#endregion
+        //10. вернуть длину
+        #region GetLength
+        public int GetLength()
+        {
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            return Length;
+        }
+        #endregion
 
         //11. доступ по индексу// вводим индекс вывести элемент
         #region GetValueByIndex
@@ -299,7 +331,6 @@ namespace Lists
                     }
                     tmp = tmp.Next;                   
                 }
-
             }
             else
             {
@@ -422,37 +453,120 @@ namespace Lists
         }
         #endregion
 
-        ////15. поиск значения максимального элемента
-        //#region GetMaximumElement
-        //public int GetMaximumElement()
-        //{
-            
-        //}
-        //#endregion
+        //15. поиск значения максимального элемента
+        #region GetMaximumElement
+        public int GetMaximumElement()
+        {
+            DNode tmp = _root;
+            int max = tmp.Value;
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            else
+            {
+                while (tmp != null)
+                {
+                    if (tmp.Value > max)
+                    {
+                        max = tmp.Value;
+                    }
+                    else
+                    {
+                        tmp = tmp.Next;
+                    }
+                }
+            }
+            return max;
+        }
+        #endregion
 
-        ////16. поиск значения минимального элемента
-        //#region GetMinimumElement
-        //public int GetMinimumElement()
-        //{
-          
-        //}
-        //#endregion
+        //16. поиск значения минимального элемента
+        #region GetMinimumElement
+        public int GetMinimumElement()
+        {
+            DNode tmp = _root;
+            int min = tmp.Value;
+            if (_root == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            else
+            {
+                while (tmp != null)
+                {
+                    if (tmp.Value < min)
+                    {
+                        min = tmp.Value;
+                    }
+                    else
+                    {
+                        tmp = tmp.Next;
+                    }
+                }
+            }
+            return min;
+        }
+        #endregion
 
-        ////17. поиск индекс максимального элемента
-        //#region
-        //public int GetIndexOfMax()//5 2 6 9 6 5 7//3
-        //{
-           
-        //}
-        //#endregion
+        //17. поиск индекс максимального элемента
+        #region
+        public int GetIndexOfMax()
+        {
+            DNode tmp = _root;
+            int max = tmp.Value;
+            int index = 0;
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
 
-        ////18. поиск индекс минимального элемента
-        //#region
-        //public int GetIndexOfMin()
-        //{
-            
-        //}
-        //#endregion
+            if (index < 0 || index > Length)
+            {
+                throw new IndexOutOfRangeException();
+            }
+            else
+            {
+                while (tmp != null)
+                {
+                    if (tmp.Value > max)
+                    {
+                        max = tmp.Value;
+                        index = index + 1;
+                    }
+                    tmp = tmp.Next;
+                }
+            }
+            return index;
+        }
+        #endregion
+
+        //18. поиск индекс минимального элемента
+        #region
+        public int GetIndexOfMin()
+        {
+            DNode tmp = _root;
+            int min = tmp.Value;
+            int index = 0;
+            if (_root == null && _tail == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
+            else
+            {
+                while (tmp != null)
+                {
+                    if (tmp.Value < min)
+                    {
+                        min = tmp.Value;
+                        index = index + 1;
+                    }
+                    tmp = tmp.Next;
+                }
+            }
+            return index;
+        }
+        #endregion
 
         ////19. сортировка по возрастанию !
         //#region
@@ -470,21 +584,72 @@ namespace Lists
         //}
         //#endregion
 
-        ////21. удаление по значению первого(?вернуть индекс)
-        //#region RemoveFirstByValue
-        //public int RemoveFirstByValue(int value)
-        //{
-         
-        //}
-        //#endregion
+        //21. удаление по значению первого(?вернуть индекс)
+        #region RemoveFirstByValue
+        public int RemoveFirstByValue(int value)
+        {
+            DNode tmp = _root;
+            int index = 0;
+            if (tmp == null)
+            {
+                throw new NullReferenceException("List is empty");
+            }
 
-        ////22. удаление по значению всех(?вернуть кол-во)
-        //#region RemoveAllValue
-        //public int RemoveAllValue(int value)
-        //{
-           
-        //}
-        //#endregion
+            while (tmp.Next != null)
+            {
+                if (tmp.Value == value)
+                {
+                    tmp.Next.Previous = tmp.Previous;
+                    Length--;
+                    return index;
+                }
+                else
+                {
+                    index = index + 1;
+                }
+                tmp = tmp.Next;
+            }
+            return -1;
+        }
+        #endregion
+
+        //22. удаление по значению всех(?вернуть кол-во)
+        #region RemoveAllValue
+        public int RemoveAllValue(int value)
+        {
+            DNode tmp = _root;
+            DNode newRoot = new DNode(tmp.Value);
+            DNode head = newRoot;
+
+            int count = 0;
+            _root = _root.Next;
+            while (_root != null)
+            {
+                if (_root.Value != value)
+                {
+                    newRoot.Next = new DNode(_root.Value);
+                    newRoot = newRoot.Next;
+                }
+                else
+                {
+                    count++;
+                }
+                _root = _root.Next;
+            }
+            _root = head;
+            if (_root.Value == value)
+            {
+                _root.Next.Previous = _root.Previous;
+                Length--;
+                count++;
+            }
+            if (count > 0)
+            {
+                return count;
+            }
+            return -1;
+        }
+        #endregion
 
         ////23. 3 конструктора(пустой, на основе одного элемента, на основе массива )
         ////24. добавление списка(вашего самодельного) в конец
